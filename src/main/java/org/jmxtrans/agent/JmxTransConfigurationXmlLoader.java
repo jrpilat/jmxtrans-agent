@@ -123,6 +123,7 @@ public class JmxTransConfigurationXmlLoader implements JmxTransConfigurationLoad
         buildQueries(rootElement, jmxTransExporterConfiguration);
         buildDiscoveryQueries(rootElement, jmxTransExporterConfiguration);
 
+        // TODO: Do I have to edit the below thingy?
         buildOutputWriters(rootElement, jmxTransExporterConfiguration, resolver);
 
         return jmxTransExporterConfiguration;

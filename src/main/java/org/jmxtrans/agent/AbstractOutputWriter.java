@@ -28,6 +28,7 @@ import org.jmxtrans.agent.util.logging.Logger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -87,8 +88,9 @@ public abstract class AbstractOutputWriter implements OutputWriter {
     @Override
     public abstract void writeInvocationResult(@Nonnull String invocationName, @Nullable Object value) throws IOException;
 
+    // TODO: Fix all the things I break here
     @Override
-    public abstract void writeQueryResult(@Nonnull String metricName, @Nullable String metricType, @Nullable Object value) throws IOException;
+    public abstract void writeQueryResult(@Nonnull String metricName, @Nullable String metricType, @Nullable Object value, @Nullable List<Tag> queryTags) throws IOException;
 
     /**
      * To workaround the complex configuration of java.util.logging, we tweak the level for "debug style" messages

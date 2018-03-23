@@ -127,16 +127,18 @@ public class StatsDOutputWriter extends AbstractOutputWriter implements OutputWr
 
     @Override
     public void writeInvocationResult(String invocationName, Object value) throws IOException {
-        writeQueryResult(invocationName, null, value);
+        writeQueryResult(invocationName, null, value, null);
     }
 
+    // TODO: Find references, fix em
     @Override
-    public synchronized void writeQueryResult(String metricName, String metricType, Object value) throws IOException
+    public synchronized void writeQueryResult(String metricName, String metricType, Object value, List<Tag> queryTags) throws IOException
     {
         //DataDog statsd with tags (https://docs.datadoghq.com/guides/dogstatsd/),
         // metric.name:value|type|@sample_rate|#tag1:value,tag2
         //Sysdig metric tags (https://support.sysdig.com/hc/en-us/articles/204376099-Metrics-integrations-StatsD-)
         // enqueued_messages#users,country=italy:10|c
+        tags.addAll(queryTags);
         StringBuilder sb = new StringBuilder();
         String type = "gauge".equalsIgnoreCase(metricType) || "g".equalsIgnoreCase(metricType) ? "g" : "c";
         if (statsType.equals(STATSD_DATADOG)) {
