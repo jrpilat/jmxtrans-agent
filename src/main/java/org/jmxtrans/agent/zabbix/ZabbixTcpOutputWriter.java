@@ -32,6 +32,7 @@ import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -41,6 +42,7 @@ import javax.annotation.Nullable;
 
 import org.jmxtrans.agent.AbstractOutputWriter;
 import org.jmxtrans.agent.OutputWriter;
+import org.jmxtrans.agent.Tag;
 import org.jmxtrans.agent.util.io.IoUtils;
 import org.jmxtrans.agent.util.net.HostAndPort;
 
@@ -90,7 +92,7 @@ public class ZabbixTcpOutputWriter extends AbstractOutputWriter implements Outpu
     @Override
     public void writeInvocationResult(@Nonnull String invocationName, @Nullable Object value) throws IOException
     {
-        writeQueryResult(invocationName, null, value);
+        writeQueryResult(invocationName, null, value, null);
     }
 
     private byte[] messageHeader = "{\"request\":\"sender data\",\"data\":[".getBytes(StandardCharsets.UTF_8);
@@ -99,7 +101,7 @@ public class ZabbixTcpOutputWriter extends AbstractOutputWriter implements Outpu
     
 
     @Override
-    public void writeQueryResult(@Nonnull String metricName, @Nullable String type, @Nullable Object value)
+    public void writeQueryResult(@Nonnull String metricName, @Nullable String type, @Nullable Object value, List<Tag> tags)
         throws IOException
     {
         String msg = messageBuilder.buildMessage(metricName, value,

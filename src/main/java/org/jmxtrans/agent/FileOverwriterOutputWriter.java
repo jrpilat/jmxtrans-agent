@@ -33,6 +33,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -81,10 +82,11 @@ public class FileOverwriterOutputWriter extends AbstractOutputWriter {
 
     @Override
     public void writeInvocationResult(String invocationName, Object value) throws IOException {
-        writeQueryResult(invocationName, null, value);
+        writeQueryResult(invocationName, null, value, null);
     }
 
-    public synchronized void writeQueryResult(@Nonnull String name, @Nullable String type, @Nullable Object value) throws IOException {
+    @Override
+    public synchronized void writeQueryResult(@Nonnull String name, @Nullable String type, @Nullable Object value, List<Tag> queryTags) throws IOException {
         try {
             if (showTimeStamp){
                 getTemporaryFileWriter().write("["+dfISO8601.format(Calendar.getInstance().getTime()) +"] "+name + " " + value + "\n");

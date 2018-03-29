@@ -33,6 +33,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.*;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -75,11 +76,11 @@ public class GraphitePlainTextTcpOutputWriter extends AbstractOutputWriter imple
 
     @Override
     public void writeInvocationResult(@Nonnull String invocationName, @Nullable Object value) throws IOException {
-        writeQueryResult(invocationName, null, value);
+        writeQueryResult(invocationName, null, value, null);
     }
 
     @Override
-    public void writeQueryResult(@Nonnull String metricName, @Nullable String type, @Nullable Object value) throws IOException {
+    public void writeQueryResult(@Nonnull String metricName, @Nullable String type, @Nullable Object value, List<Tag> queryTags) throws IOException {
         String msg = messageBuilder.buildMessage(metricName, value, TimeUnit.SECONDS.convert(System.currentTimeMillis(), TimeUnit.MILLISECONDS));
         try {
             ensureGraphiteConnection();

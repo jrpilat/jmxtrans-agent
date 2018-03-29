@@ -21,12 +21,13 @@ public class StatsDOutputWriterIntegrationTest {
         settings.put(StatsDOutputWriter.SETTING_PORT, "8125");
         writer.postConstruct(settings);
 
+        // TODO: changes here right?
         for (int measureIndex = 0; measureIndex < 10; measureIndex++) {
             for (int metricIndex = 0; metricIndex < 5; metricIndex++) {
-                writer.writeQueryResult("jmxtrans-agent-test-metric-" + metricIndex, "counter", Integer.valueOf(10 * measureIndex + metricIndex));
+                writer.writeQueryResult("jmxtrans-agent-test-metric-" + metricIndex, "counter", Integer.valueOf(10 * measureIndex + metricIndex), null);
             }
             for (int metricIndex = 0; metricIndex < 5; metricIndex++) {
-                writer.writeQueryResult("jmxtrans-agent-test-metric-" + metricIndex, "gauge", Integer.valueOf(10 * measureIndex + metricIndex));
+                writer.writeQueryResult("jmxtrans-agent-test-metric-" + metricIndex, "gauge", Integer.valueOf(10 * measureIndex + metricIndex), null);
             }
         }
 

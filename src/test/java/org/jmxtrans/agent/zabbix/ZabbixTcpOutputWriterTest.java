@@ -28,12 +28,11 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.hamcrest.Matcher;
 import org.jmxtrans.agent.AbstractOutputWriter;
+import org.jmxtrans.agent.Tag;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -88,11 +87,13 @@ public class ZabbixTcpOutputWriterTest
 
     private void writeTestMetric(AbstractOutputWriter writer)
     {
+        List<Tag> queryTags = new ArrayList<>();
+        queryTags.add(new Tag("query_tag", "query_tag_value"));
         switchValue();
         try
         {
-            writer.writeQueryResult("jmxtransagentinputtest", null, value);
-            writer.writeQueryResult("second", null, value + 20);
+            writer.writeQueryResult("jmxtransagentinputtest", null, value, queryTags);
+            writer.writeQueryResult("second", null, value + 20, queryTags);
 
             tcpByteServer.readResponse = "ZBXA100000000{\"result\":\"success\"}".getBytes(StandardCharsets.UTF_8);
 

@@ -26,13 +26,14 @@ package org.jmxtrans.agent;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author <a href="mailto:cleclerc@cloudbees.com">Cyrille Le Clerc</a>
  */
 public class DevNullOutputWriter extends AbstractOutputWriter {
     @Override
-    public void writeQueryResult(@Nonnull String name, @Nullable String type, @Nullable Object value) {
+    public void writeQueryResult(@Nonnull String name, @Nullable String type, @Nullable Object value, List<Tag> queryTags) {
     }
 
     @Override

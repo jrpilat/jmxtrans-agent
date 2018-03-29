@@ -27,12 +27,11 @@ package org.jmxtrans.agent;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.hamcrest.Matcher;
 import org.jmxtrans.agent.graphite.GraphiteOutputWriterCommonSettings;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -43,6 +42,14 @@ public class GraphitePlainTextTcpOutputWriterTest {
 
 	@Rule
 	public TcpLineServer tcpLineServer = new TcpLineServer();
+
+    private List<Tag> queryTags;
+
+    @Before
+    public void createQueryTags() throws Exception {
+        queryTags = new ArrayList<>();
+        queryTags.add(new Tag("query_tag", "query_tag_value"));
+    }
 
 	@Test
 	public void reconnectsAfterServerClosesConnection() throws Exception {
@@ -66,7 +73,7 @@ public class GraphitePlainTextTcpOutputWriterTest {
 	private void waitForErrorToBeDetectedByGraphiteWriter(GraphitePlainTextTcpOutputWriter writer) {
 		for (int i = 0; i < 10; i++) {
 			try {
-				writer.writeQueryResult("foo", null, 1);
+				writer.writeQueryResult("foo", null, 1, queryTags);
 				writer.postCollect();
 				Thread.sleep(20);
 			} catch (Exception e) {
@@ -78,7 +85,7 @@ public class GraphitePlainTextTcpOutputWriterTest {
 
 	private void writeTestMetric(GraphitePlainTextTcpOutputWriter writer) {
 		try {
-			writer.writeQueryResult("foo", null, 1);
+			writer.writeQueryResult("foo", null, 1, queryTags);
 			writer.postCollect();
 		} catch (Exception e) {
 			e.printStackTrace();

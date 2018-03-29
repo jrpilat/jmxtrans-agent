@@ -28,6 +28,7 @@ import org.jmxtrans.agent.util.StringUtils2;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -45,7 +46,7 @@ public class ConsoleOutputWriter extends AbstractOutputWriter implements OutputW
     }
 
     @Override
-    public void writeQueryResult(@Nonnull String name, @Nullable String type, @Nullable Object value) {
+    public void writeQueryResult(@Nonnull String name, @Nullable String type, @Nullable Object value, List<Tag> queryTags) {
         System.out.println(metricPathPrefix + name + " " + value + " " + TimeUnit.SECONDS.convert(System.currentTimeMillis(), TimeUnit.MILLISECONDS));
     }
 

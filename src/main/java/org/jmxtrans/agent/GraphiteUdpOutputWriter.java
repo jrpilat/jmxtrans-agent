@@ -31,6 +31,7 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -66,11 +67,11 @@ public class GraphiteUdpOutputWriter extends AbstractOutputWriter {
 
     @Override
     public void writeInvocationResult(String invocationName, Object value) throws IOException {
-        writeQueryResult(invocationName, null, value);
+        writeQueryResult(invocationName, null, value, null);
     }
 
     @Override
-    public void writeQueryResult(String metricName, String metricType, Object value) throws IOException {
+    public void writeQueryResult(String metricName, String metricType, Object value, List<Tag> queryTags) throws IOException {
         String msg = messageBuilder.buildMessage(metricName, value, TimeUnit.SECONDS.convert(clock.getCurrentTimeMillis(), TimeUnit.MILLISECONDS));
         logMessageIfTraceLoggable(msg);
         tryWriteMsg(msg + "\n");

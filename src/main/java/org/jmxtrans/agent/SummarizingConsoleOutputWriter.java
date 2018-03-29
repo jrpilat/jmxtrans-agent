@@ -26,6 +26,7 @@ package org.jmxtrans.agent;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,8 +54,8 @@ public class SummarizingConsoleOutputWriter implements OutputWriter {
     }
 
     @Override
-    public void writeQueryResult(@Nonnull String metricName, @Nullable String metricType, @Nullable Object value) throws IOException {
-        delegate.writeQueryResult(metricName, metricType, value);
+    public void writeQueryResult(@Nonnull String metricName, @Nullable String metricType, @Nullable Object value, List<Tag> queryTags) throws IOException {
+        delegate.writeQueryResult(metricName, metricType, value, queryTags);
     }
 
     @Override

@@ -25,11 +25,15 @@ package org.jmxtrans.agent.influxdb;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.jmxtrans.agent.Tag;
 import org.jmxtrans.agent.testutils.FixedTimeClock;
 import org.jmxtrans.agent.util.time.Clock;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -40,11 +44,19 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
  */
 public class InfluxDbOutputWriterTest {
 
+    // TODO: make sure tagging is tested
     private final static Clock FAKE_CLOCK = new FixedTimeClock(1234l);
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(0);
+    private List<Tag> queryTags;
 
+    @Before
+    public void createQueryTags() throws Exception {
+        queryTags = new ArrayList<>();
+        queryTags.add(new Tag("query_tag", "query_tag_value"));
+    }
+    
     @Test
     public void simpleRequest() throws Exception {
         Map<String, String> s = new HashMap<>();
@@ -53,7 +65,7 @@ public class InfluxDbOutputWriterTest {
         stubFor(post(urlPathEqualTo("/write")).willReturn(aResponse().withStatus(200)));
         InfluxDbOutputWriter writer = new InfluxDbOutputWriter(FAKE_CLOCK);
         writer.postConstruct(s);
-        writer.writeQueryResult("foo", null, 1);
+        writer.writeQueryResult("foo", null, 1, queryTags);
         writer.postCollect();
         verify(postRequestedFor(urlPathEqualTo("/write"))
                 .withQueryParam("db", equalTo("test-db"))
@@ -75,7 +87,7 @@ public class InfluxDbOutputWriterTest {
         stubFor(post(urlPathEqualTo("/write")).willReturn(aResponse().withStatus(200)));
         InfluxDbOutputWriter writer = new InfluxDbOutputWriter(FAKE_CLOCK);
         writer.postConstruct(s);
-        writer.writeQueryResult("foo", null, 1);
+        writer.writeQueryResult("foo", null, 1, queryTags);
         writer.postCollect();
         verify(postRequestedFor(urlPathEqualTo("/write"))
                 .withQueryParam("db", equalTo("test-db"))
@@ -94,7 +106,7 @@ public class InfluxDbOutputWriterTest {
         stubFor(post(urlPathEqualTo("/write")).willReturn(aResponse().withStatus(200)));
         InfluxDbOutputWriter writer = new InfluxDbOutputWriter(FAKE_CLOCK);
         writer.postConstruct(s);
-        writer.writeQueryResult("foo,tag=tagValue", null, 1);
+        writer.writeQueryResult("foo,tag=tagValue", null, 1, queryTags);
         writer.postCollect();
         verify(postRequestedFor(urlPathEqualTo("/write"))
                 .withQueryParam("db", equalTo("test-db"))
@@ -110,8 +122,8 @@ public class InfluxDbOutputWriterTest {
         stubFor(post(urlPathEqualTo("/write")).willReturn(aResponse().withStatus(200)));
         InfluxDbOutputWriter writer = new InfluxDbOutputWriter(FAKE_CLOCK);
         writer.postConstruct(s);
-        writer.writeQueryResult("foo", null, 1);
-        writer.writeQueryResult("foo2", null, 2.0);
+        writer.writeQueryResult("foo", null, 1, queryTags);
+        writer.writeQueryResult("foo2", null, 2.0, queryTags);
         writer.postCollect();
         verify(postRequestedFor(urlPathEqualTo("/write"))
                 .withQueryParam("db", equalTo("test-db"))
@@ -127,7 +139,7 @@ public class InfluxDbOutputWriterTest {
         s.put("enabled", "false");
         InfluxDbOutputWriter writer = new InfluxDbOutputWriter(FAKE_CLOCK);
         writer.postConstruct(s);
-        writer.writeQueryResult("foo", null, 1);
+        writer.writeQueryResult("foo", null, 1, queryTags);
         writer.postCollect();
         verify(exactly(0), getRequestedFor(urlEqualTo("/write")));
     }
@@ -141,7 +153,7 @@ public class InfluxDbOutputWriterTest {
         stubFor(post(urlPathEqualTo("/write")).willReturn(aResponse().withStatus(200)));
         InfluxDbOutputWriter writer = new InfluxDbOutputWriter(FAKE_CLOCK);
         writer.postConstruct(s);
-        writer.writeQueryResult("foo", null, 1);
+        writer.writeQueryResult("foo", null, 1, queryTags);
         writer.postCollect();
         verify(postRequestedFor(urlPathEqualTo("/write"))
                 .withQueryParam("db", equalTo("test-db"))

@@ -116,7 +116,7 @@ public class DiscoveryQuery extends Query
 
             String resultName = resultNameStrategy.getResultName(this, objectName, null, null, null);
             String type = getType();
-            outputWriter.writeQueryResult(resultName, type, discoveryResult);
+            outputWriter.writeQueryResult(resultName, type, discoveryResult, this.tags);
         }
         catch (Exception ex)
         {

@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jmxtrans.agent.AbstractOutputWriter;
+import org.jmxtrans.agent.Tag;
 import org.jmxtrans.agent.util.ConfigurationUtils;
 import org.jmxtrans.agent.util.StandardCharsets2;
 import org.jmxtrans.agent.util.io.IoRuntimeException;
@@ -131,11 +132,12 @@ public class InfluxDbOutputWriter extends AbstractOutputWriter {
     @Override
     public void writeInvocationResult(String invocationName, Object value) throws IOException {
         if(!enabled) return;
-        writeQueryResult(invocationName, null, value);
+        writeQueryResult(invocationName, null, value, null);
     }
 
     @Override
-    public void writeQueryResult(String metricName, String metricType, Object value) throws IOException {
+    public void writeQueryResult(String metricName, String metricType, Object value, List<Tag> queryTags) throws IOException {
+        // TODO: Write out queryTags
         if(!enabled) return;
         InfluxMetric metric = InfluxMetricConverter.convertToInfluxMetric(metricName, value, tags,
                 clock.getCurrentTimeMillis());

@@ -83,7 +83,7 @@ public class Query implements Collector {
     private Integer collectInterval;
 
     @Nullable
-    private List<Tag> tags;
+    protected List<Tag> tags;
 
     /**
      * @see #Query(String, String, String, Integer, String, String, ResultNameStrategy)
@@ -225,7 +225,7 @@ public class Query implements Collector {
                         processAttributeValue(outputWriter, objectName, attribute, key, value);
                     }
                     return;
-                } else {
+                } else {    
                     value = compositeData.get(key);
                 }
             } else {
@@ -270,17 +270,17 @@ public class Query implements Collector {
                 int idx = 0;
                 for (Object subValue : valueAsIterable) {
                     String resultName = resultNameStrategy.getResultName(this, objectName, attribute, compositeDataKey, idx);
-                    outputWriter.writeQueryResult(resultName, type, subValue);
+                    outputWriter.writeQueryResult(resultName, type, subValue, this.tags);
                     idx++;
                 }
             } else {
                 String resultName = resultNameStrategy.getResultName(this, objectName, attribute, compositeDataKey, position);
                 value = Iterables2.get((Iterable) value, position);
-                outputWriter.writeQueryResult(resultName, type, value);
+                outputWriter.writeQueryResult(resultName, type, value, this.tags);
             }
         } else {
             String resultName = resultNameStrategy.getResultName(this, objectName, attribute, compositeDataKey, null);
-            outputWriter.writeQueryResult(resultName, type, value);
+            outputWriter.writeQueryResult(resultName, type, value, this.tags);
         }
     }
 

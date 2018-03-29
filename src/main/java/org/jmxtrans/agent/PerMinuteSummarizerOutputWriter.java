@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
@@ -56,7 +57,7 @@ public class PerMinuteSummarizerOutputWriter extends AbstractOutputWriter implem
     }
 
     @Override
-    public void writeQueryResult(@Nonnull String metricName, @Nullable String metricType, @Nullable Object value) throws IOException {
+    public void writeQueryResult(@Nonnull String metricName, @Nullable String metricType, @Nullable Object value, List<Tag> queryTags) throws IOException {
 
         QueryResult currentResult = new QueryResult(metricName, metricType, value, System.currentTimeMillis());
 
@@ -72,12 +73,12 @@ public class PerMinuteSummarizerOutputWriter extends AbstractOutputWriter implem
                         "previous=" + previousResult + ", " +
                         "newCurrent.value=" + newCurrentResult.getValue());
 
-            delegate.writeQueryResult(newCurrentResult.getName(), newCurrentResult.getType(), newCurrentResult.getValue());
+            delegate.writeQueryResult(newCurrentResult.getName(), newCurrentResult.getType(), newCurrentResult.getValue(), queryTags);  // TODO: Is this right?
 
         } else {
             if (logger.isLoggable(getTraceLevel()))
                 logger.log(getTraceLevel(), "Metric " + currentResult.getName() + " is a NOT a counter");
-            delegate.writeQueryResult(metricName, metricType, value);
+            delegate.writeQueryResult(metricName, metricType, value, queryTags);
         }
     }
 

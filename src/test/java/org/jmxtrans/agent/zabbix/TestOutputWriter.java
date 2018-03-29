@@ -24,9 +24,11 @@
 package org.jmxtrans.agent.zabbix;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.jmxtrans.agent.OutputWriter;
+import org.jmxtrans.agent.Tag;
 
 /**
  * TestOutputWriter
@@ -60,7 +62,7 @@ public class TestOutputWriter implements OutputWriter
     }
 
     @Override
-    public void writeQueryResult(String metricName, String metricType, Object value) throws IOException
+    public void writeQueryResult(String metricName, String metricType, Object value, List<Tag> queryTags) throws IOException
     {
         lastMetricName = metricName;
         lastValue = value;
