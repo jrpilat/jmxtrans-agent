@@ -115,6 +115,7 @@ public class Query implements Collector {
     }
 
 
+    // TODO: DOCS FOR NEW PARAMETER
     /**
      * @param objectName         The {@link ObjectName} to search for
      *                           ({@link MBeanServer#queryMBeans(javax.management.ObjectName, javax.management.QueryExp)}),
@@ -149,7 +150,7 @@ public class Query implements Collector {
      * @see #Query(String, String, String, Integer, String, String, ResultNameStrategy)
      */
     public Query(@Nonnull String objectName, @Nonnull List<String> attributes, @Nullable String key, @Nullable Integer position,
-            @Nullable String type, @Nullable String resultAlias, @Nonnull ResultNameStrategy resultNameStrategy, @Nullable Integer collectInterval, @Nullable String tags) {
+            @Nullable String type, @Nullable String resultAlias, @Nonnull ResultNameStrategy resultNameStrategy, @Nullable Integer collectInterval, @Nullable String tagsString) {
         try {
             this.objectName = new ObjectName(Preconditions2.checkNotNull(objectName));
         } catch (MalformedObjectNameException e) {
@@ -162,7 +163,7 @@ public class Query implements Collector {
         this.type = type;
         this.resultNameStrategy = Preconditions2.checkNotNull(resultNameStrategy, "resultNameStrategy");
         this.collectInterval = collectInterval;
-        this.tags = nullOrEmtpy(tags) ? this.tags : Tag.tagsFromCommaSeparatedString(tags); // TODO: TERRIBLE!!1
+        this.tags = nullOrEmtpy(tagsString) ? new ArrayList<Tag>() : Tag.tagsFromCommaSeparatedString(tagsString); // TODO: TERRIBLE!!1
     }
 
 
@@ -291,6 +292,7 @@ public class Query implements Collector {
                 ", resultAlias='" + resultAlias + '\'' +
                 ", attributes='" + attributes + '\'' +
                 ", key='" + key + '\'' +
+                ", tags='" + tags + '\'' +
                 '}';
     }
 
