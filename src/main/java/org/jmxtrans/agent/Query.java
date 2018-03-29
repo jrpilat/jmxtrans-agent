@@ -139,7 +139,7 @@ public class Query implements Collector {
 
     public Query(@Nonnull String objectName, @Nonnull List<String> attributes, @Nullable String key, @Nullable Integer position,
                  @Nullable String type, @Nullable String resultAlias, @Nonnull ResultNameStrategy resultNameStrategy, @Nullable Integer collectInterval) {
-        this(objectName, attributes, key, position, type, resultAlias, resultNameStrategy, null, null);
+        this(objectName, attributes, key, position, type, resultAlias, resultNameStrategy, collectInterval, null);
     }
 
     /**
@@ -162,7 +162,7 @@ public class Query implements Collector {
         this.type = type;
         this.resultNameStrategy = Preconditions2.checkNotNull(resultNameStrategy, "resultNameStrategy");
         this.collectInterval = collectInterval;
-        this.tags = Tag.tagsFromCommaSeparatedString(tags);
+        this.tags = nullOrEmtpy(tags) ? this.tags : Tag.tagsFromCommaSeparatedString(tags); // TODO: TERRIBLE!!1
     }
 
 

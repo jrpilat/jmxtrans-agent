@@ -41,9 +41,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 public class LibratoMetricsIntegrationTest {
 
     LibratoWriter libratoWriter;
-    
-    @Rule
-    private List<Tag> queryTags;
+    List<Tag> queryTags;
 
     @Before
     public void before() throws IOException {
