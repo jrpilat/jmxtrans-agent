@@ -137,9 +137,13 @@ public class InfluxDbOutputWriter extends AbstractOutputWriter {
 
     @Override
     public void writeQueryResult(String metricName, String metricType, Object value, List<Tag> queryTags) throws IOException {
-        // TODO: Write out queryTags
+        List allTags = new ArrayList<>(tags);
+        for (Iterator<Tag> it = queryTags.iterator(); it.hasNext();) {
+            Tag qt = it.next();
+            allTags.add(new InfluxTag(qt.getName(), qt.getValue()));
+        }
         if(!enabled) return;
-        InfluxMetric metric = InfluxMetricConverter.convertToInfluxMetric(metricName, value, tags,
+        InfluxMetric metric = InfluxMetricConverter.convertToInfluxMetric(metricName, value, allTags,
                 clock.getCurrentTimeMillis());
         batchedMetrics.add(metric);
     }

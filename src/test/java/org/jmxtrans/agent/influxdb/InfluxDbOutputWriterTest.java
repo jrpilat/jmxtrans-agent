@@ -43,8 +43,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
  * @author Kristoffer Erlandsson
  */
 public class InfluxDbOutputWriterTest {
-
-    // TODO: make sure tagging is tested
+    
     private final static Clock FAKE_CLOCK = new FixedTimeClock(1234l);
 
     @Rule
@@ -70,7 +69,7 @@ public class InfluxDbOutputWriterTest {
         verify(postRequestedFor(urlPathEqualTo("/write"))
                 .withQueryParam("db", equalTo("test-db"))
                 .withQueryParam("precision", equalTo("ms"))
-                .withRequestBody(equalTo("foo value=1i 1234")));
+                .withRequestBody(equalTo("foo,query_tag=query_tag_value value=1i 1234")));
     }
 
     @Test
@@ -95,7 +94,7 @@ public class InfluxDbOutputWriterTest {
                 .withQueryParam("rp", equalTo("policy"))
                 .withQueryParam("u", equalTo("admin"))
                 .withQueryParam("p", equalTo("shadow"))
-                .withRequestBody(equalTo("foo,t1=v1,t2=v2 value=1i 1234")));
+                .withRequestBody(equalTo("foo,t1=v1,t2=v2,query_tag=query_tag_value value=1i 1234")));
     }
 
     @Test
@@ -111,7 +110,7 @@ public class InfluxDbOutputWriterTest {
         verify(postRequestedFor(urlPathEqualTo("/write"))
                 .withQueryParam("db", equalTo("test-db"))
                 .withQueryParam("precision", equalTo("ms"))
-                .withRequestBody(equalTo("foo,tag=tagValue value=1i 1234")));
+                .withRequestBody(equalTo("foo,query_tag=query_tag_value,tag=tagValue value=1i 1234")));
     }
 
     @Test
@@ -128,7 +127,8 @@ public class InfluxDbOutputWriterTest {
         verify(postRequestedFor(urlPathEqualTo("/write"))
                 .withQueryParam("db", equalTo("test-db"))
                 .withQueryParam("precision", equalTo("ms"))
-                .withRequestBody(equalTo("foo value=1i 1234\nfoo2 value=2.0 1234")));
+                .withRequestBody(equalTo("foo,query_tag=query_tag_value value=1i 1234\n" +
+                                         "foo2,query_tag=query_tag_value value=2.0 1234")));
     }
 
     @Test
@@ -158,7 +158,7 @@ public class InfluxDbOutputWriterTest {
         verify(postRequestedFor(urlPathEqualTo("/write"))
                 .withQueryParam("db", equalTo("test-db"))
                 .withQueryParam("precision", equalTo("ms"))
-                .withRequestBody(equalTo("foo value=1i 1234")));
+                .withRequestBody(equalTo("foo,query_tag=query_tag_value value=1i 1234")));
     }
 
 }
