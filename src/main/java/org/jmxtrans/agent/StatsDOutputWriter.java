@@ -131,8 +131,7 @@ public class StatsDOutputWriter extends AbstractOutputWriter implements OutputWr
     public void writeInvocationResult(String invocationName, Object value) throws IOException {
         writeQueryResult(invocationName, null, value, null);
     }
-
-    // TODO: Find references, fix em
+    
     @Override
     public synchronized void writeQueryResult(String metricName, String metricType, Object value, List<Tag> queryTags) throws IOException
     {

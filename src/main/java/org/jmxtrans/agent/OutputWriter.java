@@ -48,7 +48,6 @@ public interface OutputWriter {
      * @param value
      * @throws IOException
      */
-    // TODO: Fix all the things I break here
     void writeQueryResult(@Nonnull String metricName, @Nullable String metricType, @Nullable Object value, @Nullable List<Tag> queryTags) throws IOException;
 
     /**
