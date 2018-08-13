@@ -35,6 +35,7 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
@@ -82,11 +83,11 @@ public class LibratoWriter extends AbstractOutputWriter implements OutputWriter 
 
     @Override
     public void writeInvocationResult(String invocationName, Object value) throws IOException {
-        writeQueryResult(invocationName, null, value);
+        writeQueryResult(invocationName, null, value, (List<Tag>)null);
     }
 
     @Override
-    public synchronized void writeQueryResult(String metricName, String metricType, Object value) throws IOException {
+    public synchronized void writeQueryResult(String metricName, String metricType, Object value, List<Tag> queryTags) throws IOException {
         HttpURLConnection urlConnection;
         try {
             urlConnection = (HttpURLConnection) url.openConnection();

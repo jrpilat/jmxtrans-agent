@@ -24,21 +24,29 @@ package org.jmxtrans.agent;
  *
  */
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 
 public class StatsDOutputWriterTest {
     StatsDOutputWriterMock writer = new StatsDOutputWriterMock();
+    static List<Tag> queryTags;
 
+    @BeforeClass
+    public static void createQueryTags() throws Exception {
+        queryTags = new ArrayList<>();
+        queryTags.add(new Tag("query_tag", "query_tag_value"));
+    }
 
+    // TODO: Do I need to do something different here given the non-dd tagging abilities?
     @Test
-    public void test_write_counter_metric() throws IOException {
+    public void test_write_counter_metric() throws IOException {        
         Map<String, String> settings = new HashMap<>();
         settings.put(StatsDOutputWriter.SETTING_ROOT_PREFIX, "foo.bar");
         // No real connect is done. Config is here to please the postConstruct.
@@ -46,17 +54,17 @@ public class StatsDOutputWriterTest {
         settings.put(StatsDOutputWriter.SETTING_PORT, "8125");
 
         writer.postConstruct(settings);
-        writer.writeQueryResult("my-metric", "gauge", 12);
+        writer.writeQueryResult("my-metric", "gauge", 12, queryTags);
         Assert.assertThat(writer.receivedStat, equalTo("foo.bar.my-metric:12|g\n"));
-        writer.writeQueryResult("my-metric", "g", 13);
+        writer.writeQueryResult("my-metric", "g", 13, queryTags);
         Assert.assertThat(writer.receivedStat, equalTo("foo.bar.my-metric:13|g\n"));
 
-        writer.writeQueryResult("the.answer", "counter", 42);
+        writer.writeQueryResult("the.answer", "counter", 42, queryTags);
         Assert.assertThat(writer.receivedStat, equalTo("foo.bar.the.answer:42|c\n"));
-        writer.writeQueryResult("the.answer", "c", 43);
+        writer.writeQueryResult("the.answer", "c    ", 43, queryTags);
         Assert.assertThat(writer.receivedStat, equalTo("foo.bar.the.answer:43|c\n"));
 
-        writer.writeQueryResult("the.answer", "lala", 44);
+        writer.writeQueryResult("the.answer", "lala", 44, queryTags);
         Assert.assertThat(writer.receivedStat, equalTo("foo.bar.the.answer:44|c\n"));
 
     }
@@ -73,21 +81,22 @@ public class StatsDOutputWriterTest {
         settings.put(StatsDOutputWriter.SETTINGS_TAGS, "tag1:ok,tag2:woff");
 
         writer.postConstruct(settings);
-        writer.writeQueryResult("my-metric", "gauge", 12);
-        Assert.assertThat(writer.receivedStat, equalTo("foo.bar.my-metric:12|g|#tag1:ok,tag2:woff,host:bar\n"));
-        writer.writeQueryResult("my-metric", "g", 13);
-        Assert.assertThat(writer.receivedStat, equalTo("foo.bar.my-metric:13|g|#tag1:ok,tag2:woff,host:bar\n"));
+        writer.writeQueryResult("my-metric", "gauge", 12, queryTags);
+        Assert.assertThat(writer.receivedStat, equalTo("foo.bar.my-metric:12|g|#tag1:ok,tag2:woff,host:bar,query_tag:query_tag_value\n"));
+        writer.writeQueryResult("my-metric", "g", 13, queryTags);
+        Assert.assertThat(writer.receivedStat, equalTo("foo.bar.my-metric:13|g|#tag1:ok,tag2:woff,host:bar,query_tag:query_tag_value\n"));
 
-        writer.writeQueryResult("the.answer", "counter", 42);
-        Assert.assertThat(writer.receivedStat, equalTo("foo.bar.the.answer:42|c|#tag1:ok,tag2:woff,host:bar\n"));
-        writer.writeQueryResult("the.answer", "c", 43);
-        Assert.assertThat(writer.receivedStat, equalTo("foo.bar.the.answer:43|c|#tag1:ok,tag2:woff,host:bar\n"));
+        writer.writeQueryResult("the.answer", "counter", 42, queryTags);
+        Assert.assertThat(writer.receivedStat, equalTo("foo.bar.the.answer:42|c|#tag1:ok,tag2:woff,host:bar,query_tag:query_tag_value\n"));
+        writer.writeQueryResult("the.answer", "c", 43, queryTags);
+        Assert.assertThat(writer.receivedStat, equalTo("foo.bar.the.answer:43|c|#tag1:ok,tag2:woff,host:bar,query_tag:query_tag_value\n"));
 
-        writer.writeQueryResult("the.answer", "lala", 44);
-        Assert.assertThat(writer.receivedStat, equalTo("foo.bar.the.answer:44|c|#tag1:ok,tag2:woff,host:bar\n"));
+        writer.writeQueryResult("the.answer", "lala", 44, queryTags);
+        Assert.assertThat(writer.receivedStat, equalTo("foo.bar.the.answer:44|c|#tag1:ok,tag2:woff,host:bar,query_tag:query_tag_value\n"));
 
     }
 
+    // TODO: Do I need to do something different here given the non-dd tagging abilities?  Looks like sysdig does
     @Test
     public void test_write_counter_metric_sysdig() throws IOException {
         Map<String, String> settings = new HashMap<>();
@@ -99,18 +108,18 @@ public class StatsDOutputWriterTest {
         settings.put(StatsDOutputWriter.SETTINGS_TAGS, "tag1=ok,tag2=woff");
 
         writer.postConstruct(settings);
-        writer.writeQueryResult("my-metric", "gauge", 12);
-        Assert.assertThat(writer.receivedStat, equalTo("foo.bar.my-metric#tag1=ok,tag2=woff:12|g\n"));
-        writer.writeQueryResult("my-metric", "g", 13);
-        Assert.assertThat(writer.receivedStat, equalTo("foo.bar.my-metric#tag1=ok,tag2=woff:13|g\n"));
+        writer.writeQueryResult("my-metric", "gauge", 12, queryTags);
+        Assert.assertThat(writer.receivedStat, equalTo("foo.bar.my-metric#tag1=ok,tag2=woff,query_tag:query_tag_value:12|g\n"));
+        writer.writeQueryResult("my-metric", "g", 13, queryTags);
+        Assert.assertThat(writer.receivedStat, equalTo("foo.bar.my-metric#tag1=ok,tag2=woff,query_tag:query_tag_value:13|g\n"));
 
-        writer.writeQueryResult("the.answer", "counter", 42);
-        Assert.assertThat(writer.receivedStat, equalTo("foo.bar.the.answer#tag1=ok,tag2=woff:42|c\n"));
-        writer.writeQueryResult("the.answer", "c", 43);
-        Assert.assertThat(writer.receivedStat, equalTo("foo.bar.the.answer#tag1=ok,tag2=woff:43|c\n"));
+        writer.writeQueryResult("the.answer", "counter", 42, queryTags);
+        Assert.assertThat(writer.receivedStat, equalTo("foo.bar.the.answer#tag1=ok,tag2=woff,query_tag:query_tag_value:42|c\n"));
+        writer.writeQueryResult("the.answer", "c", 43, queryTags);
+        Assert.assertThat(writer.receivedStat, equalTo("foo.bar.the.answer#tag1=ok,tag2=woff,query_tag:query_tag_value:43|c\n"));
 
-        writer.writeQueryResult("the.answer", "lala", 44);
-        Assert.assertThat(writer.receivedStat, equalTo("foo.bar.the.answer#tag1=ok,tag2=woff:44|c\n"));
+        writer.writeQueryResult("the.answer", "lala", 44, queryTags);
+        Assert.assertThat(writer.receivedStat, equalTo("foo.bar.the.answer#tag1=ok,tag2=woff,query_tag:query_tag_value:44|c\n"));
 
     }
 
@@ -128,7 +137,7 @@ public class StatsDOutputWriterTest {
         writer.postConstruct(config);
 
         for (int i = 0; i < 100; i++) {
-            writer.writeQueryResult("the.answer", "counter", i);
+            writer.writeQueryResult("the.answer", "counter", i, queryTags);
         }
     }
     public class StatsDOutputWriterMock extends StatsDOutputWriter {

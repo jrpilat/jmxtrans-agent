@@ -44,9 +44,9 @@ public class OutputWritersChain extends AbstractOutputWriter implements OutputWr
     }
 
     @Override
-    public void writeQueryResult(String metricName, String type, Object value) throws IOException {
+    public void writeQueryResult(String metricName, String type, Object value, List<Tag> queryTags) throws IOException {
         for (OutputWriter outputWriter : outputWriters) {
-            outputWriter.writeQueryResult(metricName, type, value);
+            outputWriter.writeQueryResult(metricName, type, value, queryTags);
         }
     }
 

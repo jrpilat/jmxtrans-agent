@@ -25,14 +25,13 @@ package org.jmxtrans.agent;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 
@@ -42,6 +41,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 public class LibratoMetricsIntegrationTest {
 
     LibratoWriter libratoWriter;
+    List<Tag> queryTags;
 
     @Before
     public void before() throws IOException {
@@ -58,11 +58,17 @@ public class LibratoMetricsIntegrationTest {
         libratoWriter.postConstruct(settings);
     }
 
+    @Before
+    public void createQueryTags() throws Exception {
+        queryTags = new ArrayList<>();
+        queryTags.add(new Tag("query_tag", "query_tag_value"));
+    }
+
 
     @Category(IntegrationTest.class)
     @Test
     public void testWithOneCounter() throws Exception {
-        libratoWriter.writeQueryResult("test-with-one-counter.singleresult", "counter", 10);
+        libratoWriter.writeQueryResult("test-with-one-counter.singleresult", "counter", 10, queryTags);
 
         Assert.assertThat(libratoWriter.getExceptionCounter(), equalTo(0));
     }
@@ -70,7 +76,7 @@ public class LibratoMetricsIntegrationTest {
     @Category(IntegrationTest.class)
     @Test
     public void testWithOneGauge() throws Exception {
-        libratoWriter.writeQueryResult("test-with-one-gauge.singleresult", "gauge", 10);
+        libratoWriter.writeQueryResult("test-with-one-gauge.singleresult", "gauge", 10, queryTags);
 
         Assert.assertThat(libratoWriter.getExceptionCounter(), equalTo(0));
     }

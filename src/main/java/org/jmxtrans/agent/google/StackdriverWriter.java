@@ -25,10 +25,12 @@ package org.jmxtrans.agent.google;
 
 import org.jmxtrans.agent.AbstractOutputWriter;
 import org.jmxtrans.agent.OutputWriter;
+import org.jmxtrans.agent.Tag;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,7 +47,7 @@ public class StackdriverWriter extends AbstractOutputWriter implements OutputWri
     }
 
     @Override
-    public void writeQueryResult(@Nonnull String name, @Nullable String type, @Nullable Object value) {
+    public void writeQueryResult(@Nonnull String name, @Nullable String type, @Nullable Object value, List<Tag> queryTags) {
         if (null!=writer)
             writer.writeQueryResult(name,type,value);
     }

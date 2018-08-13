@@ -29,6 +29,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
@@ -82,12 +83,12 @@ public class OutputWriterCircuitBreakerDecorator implements OutputWriter {
     }
 
     @Override
-    public void writeQueryResult(@Nonnull String metricName, @Nullable String metricType, @Nullable Object value) throws IOException {
+    public void writeQueryResult(@Nonnull String metricName, @Nullable String metricType, @Nullable Object value, List<Tag> queryTags) throws IOException {
         if (isDisabled()) {
             return;
         }
         try {
-            delegate.writeQueryResult(metricName, metricType, value);
+            delegate.writeQueryResult(metricName, metricType, value, queryTags);
             incrementOutputWriterSuccess();
         } catch (RuntimeException e) {
             incrementOutputWriterFailures();

@@ -36,6 +36,7 @@ import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -96,10 +97,11 @@ public class RollingFileOutputWriter extends AbstractOutputWriter {
 
     @Override
     public void writeInvocationResult(String invocationName, Object value) throws IOException {
-        writeQueryResult(invocationName, null, value);
+        writeQueryResult(invocationName, null, value, null);
     }
 
-    public synchronized void writeQueryResult(@Nonnull String name, @Nullable String type, @Nullable Object value) throws IOException {
+    @Override
+    public synchronized void writeQueryResult(@Nonnull String name, @Nullable String type, @Nullable Object value, List<Tag> queryTags) throws IOException {
         try {
             if (singleLine) {
                 if (firstResult) {

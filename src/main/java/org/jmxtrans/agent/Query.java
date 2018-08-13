@@ -82,6 +82,9 @@ public class Query implements Collector {
     @Nullable
     private Integer collectInterval;
 
+    @Nullable
+    protected List<Tag> tags;
+
     /**
      * @see #Query(String, String, String, Integer, String, String, ResultNameStrategy)
      */
@@ -112,6 +115,7 @@ public class Query implements Collector {
     }
 
 
+    // TODO: DOCS FOR NEW PARAMETER
     /**
      * @param objectName         The {@link ObjectName} to search for
      *                           ({@link MBeanServer#queryMBeans(javax.management.ObjectName, javax.management.QueryExp)}),
@@ -133,7 +137,12 @@ public class Query implements Collector {
     private static boolean nullOrEmtpy(String attribute) {
         return attribute == null || attribute.isEmpty();
     }
-    
+
+    public Query(@Nonnull String objectName, @Nonnull List<String> attributes, @Nullable String key, @Nullable Integer position,
+                 @Nullable String type, @Nullable String resultAlias, @Nonnull ResultNameStrategy resultNameStrategy, @Nullable Integer collectInterval) {
+        this(objectName, attributes, key, position, type, resultAlias, resultNameStrategy, collectInterval, null);
+    }
+
     /**
      * Creates a query that accepts a list of attributes to collect. If the list is empty, all attributes will be collected.
      * @param collectInterval 
@@ -141,7 +150,7 @@ public class Query implements Collector {
      * @see #Query(String, String, String, Integer, String, String, ResultNameStrategy)
      */
     public Query(@Nonnull String objectName, @Nonnull List<String> attributes, @Nullable String key, @Nullable Integer position,
-            @Nullable String type, @Nullable String resultAlias, @Nonnull ResultNameStrategy resultNameStrategy, @Nullable Integer collectInterval) {
+            @Nullable String type, @Nullable String resultAlias, @Nonnull ResultNameStrategy resultNameStrategy, @Nullable Integer collectInterval, @Nullable String tagsString) {
         try {
             this.objectName = new ObjectName(Preconditions2.checkNotNull(objectName));
         } catch (MalformedObjectNameException e) {
@@ -154,6 +163,7 @@ public class Query implements Collector {
         this.type = type;
         this.resultNameStrategy = Preconditions2.checkNotNull(resultNameStrategy, "resultNameStrategy");
         this.collectInterval = collectInterval;
+        this.tags = nullOrEmtpy(tagsString) ? new ArrayList<Tag>() : Tag.tagsFromCommaSeparatedString(tagsString); // TODO: TERRIBLE!!1
     }
 
 
@@ -216,7 +226,7 @@ public class Query implements Collector {
                         processAttributeValue(outputWriter, objectName, attribute, key, value);
                     }
                     return;
-                } else {
+                } else {    
                     value = compositeData.get(key);
                 }
             } else {
@@ -261,17 +271,17 @@ public class Query implements Collector {
                 int idx = 0;
                 for (Object subValue : valueAsIterable) {
                     String resultName = resultNameStrategy.getResultName(this, objectName, attribute, compositeDataKey, idx);
-                    outputWriter.writeQueryResult(resultName, type, subValue);
+                    outputWriter.writeQueryResult(resultName, type, subValue, this.tags);
                     idx++;
                 }
             } else {
                 String resultName = resultNameStrategy.getResultName(this, objectName, attribute, compositeDataKey, position);
                 value = Iterables2.get((Iterable) value, position);
-                outputWriter.writeQueryResult(resultName, type, value);
+                outputWriter.writeQueryResult(resultName, type, value, this.tags);
             }
         } else {
             String resultName = resultNameStrategy.getResultName(this, objectName, attribute, compositeDataKey, null);
-            outputWriter.writeQueryResult(resultName, type, value);
+            outputWriter.writeQueryResult(resultName, type, value, this.tags);
         }
     }
 
@@ -282,6 +292,7 @@ public class Query implements Collector {
                 ", resultAlias='" + resultAlias + '\'' +
                 ", attributes='" + attributes + '\'' +
                 ", key='" + key + '\'' +
+                ", tags='" + tags + '\'' +
                 '}';
     }
 

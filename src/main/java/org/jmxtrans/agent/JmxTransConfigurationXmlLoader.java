@@ -123,6 +123,7 @@ public class JmxTransConfigurationXmlLoader implements JmxTransConfigurationLoad
         buildQueries(rootElement, jmxTransExporterConfiguration);
         buildDiscoveryQueries(rootElement, jmxTransExporterConfiguration);
 
+        // TODO: Do I have to edit the below thingy?
         buildOutputWriters(rootElement, jmxTransExporterConfiguration, resolver);
 
         return jmxTransExporterConfiguration;
@@ -187,8 +188,9 @@ public class JmxTransConfigurationXmlLoader implements JmxTransConfigurationLoad
 
             }
             Integer collectInterval = intAttributeOrNull(queryElement, COLLECT_INTERVAL_NAME);
+            String tags = queryElement.hasAttribute("tags") ? queryElement.getAttribute("tags") : null;
 
-            configuration.withQuery(objectName, attributes, key, position, type, resultAlias, collectInterval);
+            configuration.withQuery(objectName, attributes, key, position, type, resultAlias, collectInterval, tags);
         }
     }
     

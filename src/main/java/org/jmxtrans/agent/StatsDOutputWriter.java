@@ -35,6 +35,7 @@ import java.net.UnknownHostException;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -82,6 +83,7 @@ public class StatsDOutputWriter extends AbstractOutputWriter implements OutputWr
         }
         else {
             metricNamePrefix = ConfigurationUtils.getString(settings, SETTING_ROOT_PREFIX, getHostName().replaceAll("\\.", "_"));
+            tags = new ArrayList<>();
         }
 
         if (port == null || StringUtils2.isNullOrEmpty(host)) {
@@ -127,16 +129,18 @@ public class StatsDOutputWriter extends AbstractOutputWriter implements OutputWr
 
     @Override
     public void writeInvocationResult(String invocationName, Object value) throws IOException {
-        writeQueryResult(invocationName, null, value);
+        writeQueryResult(invocationName, null, value, null);
     }
-
+    
     @Override
-    public synchronized void writeQueryResult(String metricName, String metricType, Object value) throws IOException
+    public synchronized void writeQueryResult(String metricName, String metricType, Object value, List<Tag> queryTags) throws IOException
     {
         //DataDog statsd with tags (https://docs.datadoghq.com/guides/dogstatsd/),
         // metric.name:value|type|@sample_rate|#tag1:value,tag2
         //Sysdig metric tags (https://support.sysdig.com/hc/en-us/articles/204376099-Metrics-integrations-StatsD-)
         // enqueued_messages#users,country=italy:10|c
+        List<Tag> writerAndQueryTags = new ArrayList<>(tags);
+        writerAndQueryTags.addAll(queryTags);
         StringBuilder sb = new StringBuilder();
         String type = "gauge".equalsIgnoreCase(metricType) || "g".equalsIgnoreCase(metricType) ? "g" : "c";
         if (statsType.equals(STATSD_DATADOG)) {
@@ -148,14 +152,14 @@ public class StatsDOutputWriter extends AbstractOutputWriter implements OutputWr
                     .append("|")
                     .append(type)
                     .append("|#")
-                    .append(StringUtils2.join(Tag.convertTagsToStrings(tags), ","))
+                    .append(StringUtils2.join(Tag.convertTagsToStrings(writerAndQueryTags), ","))
                     .append("\n");
         } else if (statsType.equals(STATSD_SYSDIG)) {
             sb.append(metricNamePrefix)
                     .append(".")
                     .append(metricName)
                     .append("#")
-                    .append(StringUtils2.join(Tag.convertTagsToStrings(tags), ","))
+                    .append(StringUtils2.join(Tag.convertTagsToStrings(writerAndQueryTags), ","))
                     .append(":")
                     .append(value)
                     .append("|")

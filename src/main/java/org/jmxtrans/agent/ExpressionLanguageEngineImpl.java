@@ -122,6 +122,7 @@ public class ExpressionLanguageEngineImpl implements ExpressionLanguageEngine {
     }
 
     @Nonnull
+    // TODO: use this method to dynamically generate query-level tags
     public String resolveExpression(@Nonnull String expression, @Nonnull ObjectName exactObjectName, @Nullable String attribute, @Nullable String compositeDataKey, @Nullable Integer position) {
 
         StringBuilder result = new StringBuilder(expression.length());

@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -223,7 +224,7 @@ public class QueryTest {
         }
 
         @Override
-        public void writeQueryResult(@Nonnull String name, @Nullable String type, @Nullable Object value) throws IOException {
+        public void writeQueryResult(@Nonnull String name, @Nullable String type, @Nullable Object value, @Nullable List<Tag> queryTags) throws IOException {
             if (failOnDuplicateResult && resultsByName.containsKey(name)) {
                 fail("Result '" + name + "' already written");
             }
@@ -232,7 +233,7 @@ public class QueryTest {
 
         @Override
         public void writeInvocationResult(@Nonnull String invocationName, @Nullable Object value) throws IOException {
-            writeQueryResult(invocationName, null, value);
+            writeQueryResult(invocationName, null, value, null);
         }
     }
 }

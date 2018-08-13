@@ -26,6 +26,7 @@ package org.jmxtrans.agent;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -47,7 +48,7 @@ public interface OutputWriter {
      * @param value
      * @throws IOException
      */
-    void writeQueryResult(@Nonnull String metricName, @Nullable String metricType, @Nullable Object value) throws IOException;
+    void writeQueryResult(@Nonnull String metricName, @Nullable String metricType, @Nullable Object value, @Nullable List<Tag> queryTags) throws IOException;
 
     /**
      * <p>called after a serie of writes, typically at the end of a collection.</p>

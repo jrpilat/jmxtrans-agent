@@ -61,6 +61,8 @@ public class GraphiteUdpOutputWriterTest {
 
     private GraphiteUdpOutputWriter writer;
 
+    private List<Tag> queryTags;
+
     @Before
     public void createWriter() throws Exception {
         writer = new GraphiteUdpOutputWriter();
@@ -68,17 +70,23 @@ public class GraphiteUdpOutputWriterTest {
         writer.setClock(clock);
     }
 
+    @Before
+    public void createQueryTags() throws Exception {
+        queryTags = new ArrayList<>();
+        queryTags.add(new Tag("query_tag", "query_tag_value"));
+    }
+    
     @Test
     public void oneQueryResult() throws Exception {
-        writer.writeQueryResult("metric", "type", 1);
+        writer.writeQueryResult("metric", "type", 1, queryTags);
         assertEventuallyReceived(udpServer, contains("foo.metric 1 33\n"));
     }
 
     @Test
     public void manyQueryResults() throws Exception {
-        writer.writeQueryResult("metric", "type", 1);
-        writer.writeQueryResult("metric.2", "type", 2);
-        writer.writeQueryResult("metric.3", "type", 3);
+        writer.writeQueryResult("metric", "type", 1, queryTags);
+        writer.writeQueryResult("metric.2", "type", 2, queryTags);
+        writer.writeQueryResult("metric.3", "type", 3, queryTags);
         assertEventuallyReceived(udpServer,
                 containsInAnyOrder("foo.metric 1 33\n", "foo.metric.2 2 33\n", "foo.metric.3 3 33\n"));
     }
